@@ -104,11 +104,18 @@ class Group extends Selectable {
 	
 	
 	public static function fromOsapi($osapi) {
-		$oGroup = new Group($osapi->id["groupId"]);
+		if (is_array($osapi)) {
+			$oGroup = new Group($osapi['id']['groupId']);
+			$oGroup->_aAttributes["title"] = $osapi['title'];
+			$oGroup->_aAttributes["description"] = $osapi['description'];
+		} else {
+			$oGroup = new Group($osapi->id);
 				
-		$oGroup->_aAttributes["title"] = $osapi->title;
-		$oGroup->_aAttributes["description"] = $osapi->description;
-		
+			$oGroup->_aAttributes["title"] = $osapi->title;
+			if (isset($osapi->description)) {
+				$oGroup->_aAttributes["description"] = $osapi->description;
+			}
+		}	
 		return $oGroup;
 	}
 	

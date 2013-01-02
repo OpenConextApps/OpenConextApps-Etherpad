@@ -8,7 +8,7 @@
 require_once("Model/Selectable.php");
 require_once("Model/Group.php");
 require_once("Model/Person.php");
-require_once("Model/Message.php");
+require_once("Model/grouprelMessage.php");
 
 require_once("Controller/IGroupRelations.php");
 

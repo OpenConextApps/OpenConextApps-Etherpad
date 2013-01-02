@@ -153,7 +153,7 @@ class osapiOAuth3Legged extends osapiOAuth2Legged {
    * @param osapiProvider $provider the provider configuration (required to get the oauth endpoints)
    */
   public function obtainRequestToken($callbackUrl) {
-    $this->storage->set($this->storageKey.":originalUrl", $callbackUrl); print_r($this);
+    $this->storage->set($this->storageKey.":originalUrl", $callbackUrl);
     $ret = $this->requestRequestToken();
     if ($ret['http_code'] == '200') {
       $matches = array();
@@ -181,7 +181,7 @@ class osapiOAuth3Legged extends osapiOAuth2Legged {
         $requestTokenRequest->set_parameter($key, $value);
       }
     }
-    $requestTokenRequest->sign_request($this->signatureMethod, $this->consumerToken, NULL); print_r($requestTokenRequest);
+    $requestTokenRequest->sign_request($this->signatureMethod, $this->consumerToken, NULL);
     return osapiIO::send($requestTokenRequest, 'GET', $this->provider->httpProvider);
   }
 

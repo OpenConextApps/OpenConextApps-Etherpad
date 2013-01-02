@@ -409,9 +409,14 @@ class EPLc_Manager {
 			}
 		
 			$groups= array();
-			foreach ($batchresult['getGroups']->list as $osapiGroup) {
-				
-				$groups[] = Group::fromOsapi($osapiGroup);
+			if (is_object($batchresult['getGroups'])) {
+				foreach ($batchresult['getGroups']->list as $osapiGroup) {
+					$groups[] = Group::fromOsapi($osapiGroup);
+				}
+			} elseif (is_array($batchresult['getGroups'])) {
+				foreach ($batchresult['getGroups']['result']['list'] as $osapiGroup) {
+					$groups[] = Group::fromOsapi($osapiGroup);
+				}
 			}
 		}
 		

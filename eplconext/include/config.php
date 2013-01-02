@@ -13,7 +13,7 @@ require_once('../CozmanovaPHPCommons/lib/cpc.php');
 
 
 /* Load our own libraries */
-require_once('GroupRel/OpenSocial/osapiGroupRelProvider.php');
+//require_once('GroupRel/OpenSocial/osapiGroupRelProvider.php');
 require_once('lib/GroupRel/Controller/OpenSocial/GroupRelationsImpl.php');
 
 // OAuth stuff:

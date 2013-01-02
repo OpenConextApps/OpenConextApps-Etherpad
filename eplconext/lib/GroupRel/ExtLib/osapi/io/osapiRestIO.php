@@ -74,7 +74,7 @@ class osapiRestIO extends osapiIO {
     $ret = array();
     foreach ($requests as $request) {
       $entry = self::executeRestRequest($request, $provider, $signer);
-      
+//print("Entry: " . print_r($request, true) . "<br/>\n)");      
       // flip 'entry' to 'list' so the result structure processing can be the same between the RPC and REST implementations
       if (!$entry instanceof osapiError) {
         if (isset($entry['data']['entry'])) {
@@ -104,7 +104,7 @@ class osapiRestIO extends osapiIO {
     if (method_exists($provider, 'postParseResponseProcess')) {
       $provider->postParseResponseProcess($request, $ret);
     }
-    
+//exit();    
     return $ret;
   }
 
@@ -179,6 +179,7 @@ class osapiRestIO extends osapiIO {
     }
     
     $signedUrl = $signer->sign($method, $url, $request->params, $postBody, $headers);
+//print("Method: ${method}, url: ${url}, params: " . print_r($request, true) . "<br/>\nheaders:" . print_r($headers, true));
     $response = self::send($signedUrl, $method, $provider->httpProvider, $headers, $postBody);
 
     if (method_exists($provider, 'postRequestProcess')) {
@@ -196,7 +197,7 @@ class osapiRestIO extends osapiIO {
     } else {
       $ret = new osapiError($response['http_code'], isset($response['data']) ? $response['data'] : '');
     }
-    
+//print_r($ret);    
     return $ret;
   }
 

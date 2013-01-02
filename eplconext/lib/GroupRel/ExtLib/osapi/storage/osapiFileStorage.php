@@ -128,8 +128,9 @@ class osapiFileStorage extends osapiStorage {
 
   public function delete($key) {
     $file = $this->getStorageFile(md5($key));
-    if (! @unlink($file)) {
-      throw new osapiStorageException("Storage file could not be deleted");
+    if (! @unlink($file)) { 
+    	if (file_exists($file))
+      		throw new osapiStorageException("Storage file could not be deleted: ${key}/${file}");
     }
   }
 }

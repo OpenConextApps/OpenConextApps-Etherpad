@@ -89,14 +89,13 @@ class osapiOAuth2Legged extends osapiAuth {
    */
   public function sign($method, $url, $params = array(), $postBody = false, &$headers = array()) {
     $oauthRequest = OAuthRequest::from_request($method, $url, $params);
-
     $params = $this->mergeParameters($params);
 
     foreach ($params as $key => $val) {
       if (is_array($val)) {
         $val = implode(',', $val);
       }
-      $oauthRequest->set_parameter($key, $val);
+      $oauthRequest->set_parameter($key, $val, false);	// false=don't allow duplicates
     }
     if ($postBody && strlen($postBody)) {
       if ($this->useBodyHash) {
@@ -111,6 +110,13 @@ class osapiOAuth2Legged extends osapiAuth {
     if ($postBody && $this->useBodyHack) {
       unset($oauthRequest->parameters[$postBody]);
     }
+
+    // dopey adds oauth-parameters in header:
+    if (is_array($headers)) {
+    	$headers[] = $oauthRequest->to_header();
+    	return $url;	// instead of the url with oauth-parameters	
+    }
+    
     $signedUrl = $oauthRequest->to_url();
     return $signedUrl;
   }

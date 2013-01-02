@@ -77,7 +77,7 @@ class osapiOAuth3Legged_10a extends osapiOAuth2Legged {
    * @return osapiOAuth3Legged the logged-in provider instance
    */
   public static function performOAuthLogin($consumerKey, $consumerSecret, osapiStorage $storage, osapiProvider $provider, $localUserId = null, $userId = null) {
-    $auth = new osapiOAuth3Legged($consumerKey, $consumerSecret, $storage, $provider, $localUserId, $userId);
+    $auth = new osapiOAuth3Legged_10a($consumerKey, $consumerSecret, $storage, $provider, $localUserId, $userId);
     if (($token = $storage->get($auth->storageKey)) !== false) {
       $auth->accessToken = $token;
     } else {
@@ -90,9 +90,10 @@ class osapiOAuth3Legged_10a extends osapiOAuth2Legged {
       } else {
         // Initialize the OAuth dance, first request a request token, then kick the client to the authorize URL
         // First we store the current URL in our storage, so that when the oauth dance is completed we can return there
-        $callbackUrl = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $callbackUrl = (($_SERVER['HTTPS'] == 'on')?'https':'http') . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         $uid = uniqid();
         $token = $auth->obtainRequestToken($callbackUrl, $uid);
+// print_r($token); exit();
         $auth->storage->set($auth->storageKey.":nonce" . $uid,  $token->secret);
         $auth->redirectToAuthorization($token);
       }
@@ -110,6 +111,7 @@ class osapiOAuth3Legged_10a extends osapiOAuth2Legged {
    */
   public function upgradeRequestToken($requestToken, $requestTokenSecret, $oauthVerifier) {
     $ret = $this->requestAccessToken($requestToken, $requestTokenSecret, $oauthVerifier);
+//debug_print_backtrace(); print_r($ret); exit();
     if ($ret['http_code'] == '200') {
       $matches = array();
       @parse_str($ret['data'], $matches);
@@ -117,7 +119,9 @@ class osapiOAuth3Legged_10a extends osapiOAuth2Legged {
         throw new osapiException("Error authorizing access key (result was: {$ret['data']})");
       }
       // The token was upgraded to an access token, we can now continue to use it.
-      $this->accessToken = new OAuthConsumer(urldecode($matches['oauth_token']), urldecode($matches['oauth_token_secret']));
+      // dopey removes:
+      //$this->accessToken = new OAuthConsumer(urldecode($matches['oauth_token']), urldecode($matches['oauth_token_secret']));
+      $this->accessToken = new OAuthConsumer($matches['oauth_token'], $matches['oauth_token_secret']);
       $this->storage->set($this->storageKey, $this->accessToken);
       return $this->accessToken;
     } else {
@@ -137,6 +141,7 @@ class osapiOAuth3Legged_10a extends osapiOAuth2Legged {
     $accessToken = new OAuthConsumer($requestToken, $requestTokenSecret);
     $accessRequest = OAuthRequest::from_consumer_and_token($this->consumerToken, $accessToken, "GET", $this->provider->accessTokenUrl, array('oauth_verifier' => $oauthVerifier));
     $accessRequest->sign_request($this->signatureMethod, $this->consumerToken, $accessToken);
+
     return osapiIO::send($accessRequest, 'GET', $this->provider->httpProvider);
   }
 
@@ -167,8 +172,14 @@ class osapiOAuth3Legged_10a extends osapiOAuth2Legged {
     $ret = $this->requestRequestToken($callbackUrl . $callbackParams);
     if ($ret['http_code'] == '200') {
       $matches = array();
-      preg_match('/oauth_token=(.*)&oauth_token_secret=(.*)/', $ret['data'], $matches);
-      if (!is_array($matches) || count($matches) != 3) {
+      /* updated by dopey: */
+      //preg_match('/oauth_token=(.*)&oauth_token_secret=(.*)/', $ret['data'], $matches);
+      //if (!is_array($matches) || count($matches) != 3) {
+      //  throw new osapiException("Error retrieving request key ({$ret['data']})");
+      //}
+      preg_match('/oauth_token=([^\&]*)&oauth_token_secret=([^\&]*)(&oauth_callback_confirmed=[^\&]*)?/',
+      $ret['data'], $matches);
+      if (!is_array($matches) || count($matches) < 3) {
         throw new osapiException("Error retrieving request key ({$ret['data']})");
       }
       return new OAuthToken(urldecode($matches[1]), urldecode($matches[2]));
@@ -192,7 +203,8 @@ class osapiOAuth3Legged_10a extends osapiOAuth2Legged {
     }
     $requestTokenRequest->set_parameter('oauth_callback', $callbackUrl);
     $requestTokenRequest->sign_request($this->signatureMethod, $this->consumerToken, NULL);
-    return osapiIO::send($requestTokenRequest, 'GET', $this->provider->httpProvider);
+    $o = osapiIO::send($requestTokenRequest, 'GET', $this->provider->httpProvider);
+    return $o;
   }
 
   /**
@@ -204,6 +216,12 @@ class osapiOAuth3Legged_10a extends osapiOAuth2Legged {
    */
   public function redirectToAuthorization($token) {
     $authorizeRedirect = $this->provider->authorizeUrl . "?oauth_token={$token->key}";
+    
+	/* dopeychange: debug link instead of automagically redirect */
+//    $callback = "http://joomla.conext.dev/joomla-surfconext/administrator/index.php?option=com_login&task=login";
+//    $authorizeRedirect .= "&oauth_callback=" . urlencode($callback);    
+//    echo "<a href='$authorizeRedirect'>$authorizeRedirect</a>"; exit();
     header("Location: $authorizeRedirect");
+    exit();
   }
 }

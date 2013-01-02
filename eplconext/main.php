@@ -122,7 +122,7 @@ if ($proxied_content !== FALSE) {
 	$provider = new osapiGroupRelProvider(NULL, $os_config);
 	$auth = osapiOAuth3Legged_10a::performOAuthLogin(OAUTH_CONFIG_consumerKey, OAUTH_CONFIG_consumerSecret, 
 				$storage, $provider, $userId);
-	
+
 	/* now retrieve groups for this member */
 	$user_params = array('userId' => $userId);
 	
@@ -134,7 +134,7 @@ if ($proxied_content !== FALSE) {
 	$batch = $osapi->newBatch();
 	$batch->add($service->get($user_params), $resultkey);
 	$result = $batch->execute();
-	
+
 	// deal with unauthorized requests:
 	if ($result[$resultkey] instanceof osapiError) {
 		$err = $result[$resultkey];

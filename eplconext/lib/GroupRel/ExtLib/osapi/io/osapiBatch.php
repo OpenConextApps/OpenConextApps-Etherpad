@@ -55,11 +55,15 @@ class osapiBatch {
     if (!count($this->requests)) {
       throw new osapiException("Can't execute batch, no requests specified");
     }
-    if (false && ! empty($this->provider->rpcEndpoint)) {
+    // dopey: remove fix, as SURFconext no longer supports RPC endpoint
+    // if (false && ! empty($this->provider->rpcEndpoint)) {
+    if (! empty($this->provider->rpcEndpoint)) {
       // Send batch through the RPC interface if it is available
+// print("Using RPC");exit();      
       return osapiRpcIO::sendBatch($this->requests, $this->provider, $this->signer, $this->strictMode);
     } elseif (! empty($this->provider->restEndpoint)) {
-      // Otherwise use the REST endpoint if available (this is slower since it has to do a round trip per request)
+// print("Using REST");exit();      
+    	// Otherwise use the REST endpoint if available (this is slower since it has to do a round trip per request)
       return osapiRestIO::sendBatch($this->requests, $this->provider, $this->signer, $this->strictMode);
     } else {
       // No usable endpoints defined, woops!

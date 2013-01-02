@@ -499,7 +499,7 @@ class OAuthServer {/*{{{*/
     $this->check_signature($request, $consumer, $token);
 
     // Rev A change
-    $callback = $request->get_parameter('oauth_callback'); print_r($request);
+    $callback = $request->get_parameter('oauth_callback');
     $new_token = $this->data_store->new_request_token($consumer, $callback);
 
     return $new_token;

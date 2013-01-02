@@ -23,7 +23,11 @@
  * both 2 legged and 3 legged OAuth.
  */
 
-require_once "external/OAuth.php";
+if (defined('SIMPLESAML_PATH')) {
+	require_once SIMPLESAML_PATH . '/modules/oauth/libextinc/OAuth.php';
+} else {
+	require_once "external/OAuth.php";
+}
 require_once "external/XrdsSimpleParser.php";
 require_once "providers/osapiProvider.php";
 require_once "storage/osapiStorage.php";

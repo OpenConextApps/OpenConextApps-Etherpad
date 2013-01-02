@@ -48,7 +48,7 @@ class osapiRpcIO extends osapiIO {
     $ret = self::send($signedUrl, $method, $provider->httpProvider, $headers, $request);
     if (method_exists($provider, 'postRequestProcess')) {
       $provider->postRequestProcess($requests, $response);
-    }
+    } 
     if ($ret['http_code'] == '200') {
       $result = json_decode($ret['data'], true);
       // the decode result and input string being the same indicates a decoding failure

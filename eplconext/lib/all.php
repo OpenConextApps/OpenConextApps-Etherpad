@@ -1,7 +1,8 @@
 <?php
-require_once('osapi/osapi.php');
+//require_once('osapi/osapi.php');
 /* SimpleSAMLphp */
-require_once('simplesamlphp-1.8.0/lib/_autoload.php');
+define('SIMPLESAML_PATH', '/var/www/simplesamlphp-1.10.0');
+require_once(SIMPLESAML_PATH . '/lib/_autoload.php');
 // force loading OAuth library:
 // new sspmod_oauth_OAuthServer();
 

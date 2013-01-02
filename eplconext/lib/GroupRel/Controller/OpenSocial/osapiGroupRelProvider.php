@@ -25,7 +25,17 @@ class osapiGroupRelProvider extends osapiProvider {
    */
   public function preRequestProcess(&$request, &$method, &$url, &$headers, osapiAuth &$signer) {
     if (method_exists($signer, 'setUseBodyHash')) {
-      $signer->setUseBodyHash(true);	print("preRequestProcess, setting useBodyHash-true<br/>\n");
+      $signer->setUseBodyHash(true);
+    }
+    // Should we add scope, and how:
+    if ($method == 'GET') {
+    	$request->params['scope']='read';
+    }
+    
+    // Initialize headers, to enforce OAuth Authorization through
+    // http-headers instead of through querystring parameters
+    if (! is_array($headers)) {
+    	$headers = array();
     }
   }
 }

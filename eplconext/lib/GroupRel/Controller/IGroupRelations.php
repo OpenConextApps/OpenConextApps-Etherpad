@@ -7,7 +7,8 @@
  *							'implementation-specific' => 'more-config-options',	//
  *						)
  *
- * @author dopey
+ * @author dopey (mdobrinic@cozmanova.com)
+ * for SURFnet bv (www.surfnet.nl)
  *
  */
 
@@ -41,6 +42,14 @@ abstract class IGroupRelations {
 	
 	
 	/**
+	 * Perform function to initialize the context to get user groups
+	 * @param string $userId external userID
+	 * throws exception when something goes really wrong
+	 **/
+	public abstract function prepareClient($userId);
+    
+    
+	/**
 	 * Fetch group relations for provided user
 	 * @return array of cGroups and cPersons
 	 */
@@ -51,7 +60,7 @@ abstract class IGroupRelations {
 	 * Perform action on a provided set of groups or persons
 	 * @param $arguments array of key=>value parameters
 	 * @param $callback function reference ($function) or object method reference (array($object,$method)) that 
-	 *    is called with (&($arguments['$message']), Person:$person) arguments
+	 *    is called with (&($arguments['$message']), Person:$person, string:$groupname) arguments
 	 * @param $groups array of Group-instances to distribute message to (or to its individual members)
 	 * @param $persons array of Person-onstances to distribute message to
 	 * @return nothing
