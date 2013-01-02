@@ -121,6 +121,11 @@ Unpack the source package as follows:
 # cd /var/www
 # tar zxvf etherpad.conext.surfnetlabs.nl.version-x.y.z.tgz
 
+3.3. SimpleSAMLphp
+The SAML implementation relies on SimpleSAMLphp (www.simplesamlphp.org)
+Install this in the appropriate location (like /var/www/simplesamlphp-v.x.y), configure
+it, and set the location of the SimpleSAMLphp installation in:
+	eplconext/lib/all.php
 
 
 4. Application configuration
